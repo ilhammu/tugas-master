@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>N-Gram Frequency</title>
+    <style>
+       
+      body {
+        padding: 0;
+        margin: 0;
+        font-family: Arial, Helvetica, sans-serif;
+        background-color: whitesmoke;
+        min-width: 600px;
+      }
+      header{
+            margin: 0 0 5px 0;
+            padding: 0.5%;
+            text-align: center;
+            font-weight: 600;
+            font-family: Arial, Helvetica, sans-serif;
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+            position: sticky;
+            top:0;
+            background-color: whitesmoke;
+            max-height: 50px;
+        }
+      div {
+        padding: 1%;
+      }
+      input {
+        border: 1px solid midnightblue;
+
+        border-radius: 10px;
+        padding: 1%;
+        margin: 1%;
+      }
+      .container {
+        margin: auto;
+        max-width: 90%;
+        min-width: 70%;
+      }
+      #textDiv {
+        border-top: 1px dashed midnightblue;
+        margin-top: 5px;
+        margin-bottom: 5px;
+      }
+      button{
+        border: 1px solid midnightblue;
+        background-color: whitesmoke;
+        color: midnightblue;
+        font-weight: bold;
+        padding: 5px;
+      }
+      button:hover{
+        border: px solid midnightblue;
+        background-color: whitesmoke;
+        color: midnightblue;
+        font-weight: bold;
+        cursor: pointer;
+        padding: 5px;
+        box-shadow: 0 3px grey;
+      }
+      button:active{
+        border: 1px solid grey;
+        background-color: midnightblue;
+        color: whitesmoke;
+        font-weight: bold;
+        cursor: pointer;
+        padding: 5px;
+        box-shadow: 0 1px grey;
+      }
+      table.nGramTable{
+        padding:0;
+        font-size: 12;
+        border: 1px solid gray;
+        margin-top: 5%;
+      }
+      th{
+        font-weight: bold;
+        border-bottom: 1px solid gray;
+      }
+      thead{
+        position: sticky;
+        top: 40px;
+        background: whitesmoke;
+        border-bottom: 1px solid black;
+      }
+      td{
+        padding: 5px;
+        border-bottom: 1px solid gray;
+      }
+      tr:hover{
+        padding: 5px;
+        background-color: aliceblue;
+        border-bottom: 1px solid gray;
+      }
+      #overlay {
+  position: fixed;
+  display: none;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0,0,0,0.5);
+  z-index: 2;
+  cursor: pointer;
+}
+#overlayText{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  font-size: 50px;
+  color: white;
+  transform: translate(-50%,-50%);
+  -ms-transform: translate(-50%,-50%);
+}
+.col-50{
+  width: 100%;
+}
+.row{
+  display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 20px;
+}
+
+
+    </style>
+  </head>
+  
+  <body>
+    <header>
+        N-Gram Frequency | Ilham Muharom B - 20220130033 | SOCS - Nusa Putra University
+      </header>
+    <!-- Ilham Muharom B - 20220130033 - Artificial Intelligence Semester 1 - SOCS Nusa Putra University  -->
+    <div class="container">
+      <div style="margin-bottom: 4px;">
+        <label for="fileInput">Input File : </label>
+          <input type="file" id="fileInput" />
+          <span class="row" style="margin-left: 100px;">
+          <label style="font-size: small; color: gray;">*input file .txt</label>
+        </span>
+      </div>
+      
+      <div id="textDiv"></div>
+      <div class="nGram">
+        <button type="button" data-id="Unigram" onclick="showTable('Unigram')">Unigram</button>
+        <button type="button" data-id="Bigram" onclick="showTable('Bigram')">Bigram</button>
+        <button type="button" data-id="Trigram" onclick="showTable('Trigram')">Trigram</button>
+        <div class="row">
+        <div class="col-50">        <table class="nGramTable" id="Unigram" style="display: none;">
+          <thead>
+              <tr>
+                  <th colspan="2">UniGram</th>
+              </tr>
+              <tr>
+                  <th>Word</th>
+                  <th>N</th>
+              </tr>
+          </thead>
+          <tbody id="tbodyUnigram">
+
+          </tbody>
+      </table>
+      <table class="nGramTable" id="Bigram" style="display: none;">
+          <thead>
+              <tr>
+                  <th colspan="2">Bigram</th>
+              </tr>
+              <tr>
+                  <th>Word</th>
+                  <th>N</th>
+              </tr>
+          </thead>
+          <tbody id="tbodyBigram">
+
+          </tbody>
+      </table>
+      <table class="nGramTable" id="Trigram" style="display: none;">
+          <thead>
+              <tr>
+                  <th colspan="2">Trigram</th>
+              </tr>
+              <tr>
+                  <th>Word</th>
+                  <th>Frequency</th>
+              </tr>
+              <tbody id="tbodyTrigram">
+
+              </tbody>
+          </thead>
+      </table></div>
+        <div class="col-50" style="border-left: 1px solid midnightblue;padding:4px 12px;">
+          <h4>Process to generate those n-grams</h4>
+          <ul>
+            <li>Split each word and convert it into an array.</li>
+            <li>Loop through the array of words to create an array of "n-gram" frequencies. If the index does not exist, create a new array index and set the value to 1.</li>
+            <li>If the index already exists, increment the existing value.</li>
+            <li>Count the frequency of n-grams:
+              <ul>
+                <li>Unigram Frequency: Push the word at index n to the unigramFrequencies array.</li>
+                <li>Bigram Frequency: Push the words at index n and n+1 to the bigramFrequencies array.</li>
+                <li>Trigram Frequency: Push the words at index n, n+1, and n+2 to the trigramFrequencies array.</li>
+              </ul>
+            </li>
+          </ul>          
+        </div>
+      </div>
+        
+      </div>
+    </div>
+    <div id="overlay"><span id="overlayText">Please Wait..</span></div>
+    <script>
+      document
+        .getElementById("fileInput")
+        .addEventListener("change", handleFileSelect, false);
+      var textDiv = document.getElementById("textDiv");
+      var text;
+      const asyncOperations = [];
+        var unigramTbody = document.getElementById('tbodyUnigram');
+        // console.log(unigramTbody[0]);
+        var bigramTbody = document.getElementById('tbodyBigram');
+        var trigramTbody = document.getElementById('tbodyTrigram');
+      function handleFileSelect(event) {
+        
+        const file = event.target.files[0];
+        const reader = new FileReader();
+        if (file) {
+          const fileType = file.type;
+
+          if (fileType.startsWith("text/")) {
+            console.log("Selected file is a text file.");
+            blockUIon();
+            reader.onload = function (event) {
+              text = event.target.result;
+              console.log(text);
+              displayText(text);
+            };
+            reader.readAsText(file);
+          } else {
+            this.value = "";
+            alert("Selected file is of an unsupported type.");
+          }
+        }
+      }
+
+      function displayText(t) {
+        textDiv.innerHTML = "";
+        let sanitizedText = t.replace(/[^\w\s]|_/g, "").replace(/\s+/g, " "); //Replace all marks with regex
+
+        let lowercaseText = sanitizedText.replace(/[A-Z]/g, (match) =>
+          String.fromCharCode(match.charCodeAt(0) + 32)
+        );
+
+        asyncOperations.push(
+          appendEl("Remove Marks", sanitizedText, "removeMarks"),
+          appendEl("To Lowercase", lowercaseText, "toLowCase"),
+          nGram(lowercaseText),
+        );
+      }
+
+      Promise.all(asyncOperations)
+        .then((results) => {
+
+          console.log("All promises resolved:", results);
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
+
+      function nGram(t) {
+        return new Promise((resolve) => {
+          setTimeout(() => {
+            console.log("N-Gram...");
+            //Unigrams
+            !document.getElementById('Unigram').hasAttribute('display') && document.getElementById('Unigram').setAttribute('style','display:none;');
+            !document.getElementById('Bigram').hasAttribute('display') && document.getElementById('Bigram').setAttribute('style','display:none;');
+            !document.getElementById('Trigram').hasAttribute('display') && document.getElementById('Trigram').setAttribute('style','display:none;');
+            let unigrams = t.split(" "); //split each words to array
+            let unigramFrequencies = {};
+            unigrams.forEach((unigram) => {
+              if (unigramFrequencies[unigram]) {
+                unigramFrequencies[unigram]++;
+              } else {
+                unigramFrequencies[unigram] = 1;
+              }
+            });
+
+            //Bigrams
+            let words = t.split(" "); //split each word to array
+            let bigrams = [];
+            //push n index and n+1 index to bigram[n] index
+            for (let i = 0; i < words.length - 1; i++) {
+              let bigram = words[i] + " " + words[i + 1];
+              bigrams.push(bigram);
+            }
+            let bigramFrequencies = {};
+            bigrams.forEach((bigram) => {
+              if (bigramFrequencies[bigram]) {
+                //if bigram key is exist increment
+                bigramFrequencies[bigram]++;
+              } else {
+                //if bigram key is not exist set value = 1
+                bigramFrequencies[bigram] = 1;
+              }
+            });
+            console.log(unigramFrequencies);
+
+            //Trigrams
+            let trigrams = [];
+            for (let i = 0; i < words.length - 2; i++) {
+              let trigram = words[i] + " " + words[i + 1] + " " + words[i + 2];
+              trigrams.push(trigram);
+            }
+            let trigramFrequencies = {};
+            trigrams.forEach((trigram) => {
+              if (trigramFrequencies[trigram]) {
+                trigramFrequencies[trigram]++;
+              } else {
+                trigramFrequencies[trigram] = 1;
+              }
+            });
+
+            // sorting
+
+            var sortedArray = Object.entries(unigramFrequencies).sort((a, b) => b[1] - a[1]);
+            unigramFrequencies = Object.fromEntries(sortedArray);
+
+            // console.log("Unigrams: ", unigramFrequencies);
+            unigramTbody.innerHTML="";
+            Object.entries(unigramFrequencies).forEach(([key, value]) => {
+                let html ='<tr><td>'+key+'</td><td>'+value+'</td></tr>'
+                unigramTbody.innerHTML += html;
+});
+
+document.getElementById('Unigram').removeAttribute('style');
+sortedArray = Object.entries(bigramFrequencies).sort((a, b) => b[1] - a[1]);
+bigramFrequencies = Object.fromEntries(sortedArray);
+
+            // console.log("Bigrams: ", bigramFrequencies);
+            bigramTbody.innerHTML="";
+            Object.entries(bigramFrequencies).forEach(([key, value]) => {
+                let html ='<tr><td>'+key+'</td><td>'+value+'</td></tr>'
+                bigramTbody.innerHTML += html;
+});
+sortedArray = Object.entries(trigramFrequencies).sort((a, b) => b[1] - a[1]);
+trigramFrequencies = Object.fromEntries(sortedArray);
+
+            // console.log("Trigrams: ", trigramFrequencies);
+trigramTbody.innerHTML="";
+            Object.entries(trigramFrequencies).forEach(([key, value]) => {
+                let html ='<tr><td>'+key+'</td><td>'+value+'</td></tr>'
+                trigramTbody.innerHTML += html;
+});
+blockUIoff();
+          }, 2000);
+        });
+      }
+      function appendEl(h, txt, id) {
+        return new Promise((resolve) => {
+          setTimeout(() => {
+            var newDiv = document.createElement("div");
+            newDiv.id = id;
+            var header = document.createElement("b");
+            header.textContent = h;
+            textDiv.appendChild(header);
+            newDiv.textContent = txt;
+            textDiv.appendChild(newDiv);
+          }, 1500);
+        });
+      }
+      function showTable(id) {
+        let tables = document.querySelectorAll('.nGramTable');
+        tables.forEach(tb=>{
+            console.log(tb.id);
+            if(id == tb.id){
+                document.getElementById(tb.id).removeAttribute('style')
+            }else{
+                document.getElementById(tb.id).hasAttribute('style') == false && document.getElementById(tb.id).setAttribute('style','display:none;')
+            }
+        })
+      }
+
+      function blockUIon() {
+  document.getElementById("overlay").style.display = "block";
+}
+
+function blockUIoff() {
+  document.getElementById("overlay").style.display = "none";
+}
+    </script>
+  </body>
+</html>
